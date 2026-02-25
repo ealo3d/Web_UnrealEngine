@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computación Gráfica 2: Guía Completa Unreal Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+            background-color: #050505;
+        }
+
+        .card-glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+        }
+
+        .img-container {
+            background: #111;
+            border-radius: 1rem;
+            margin: 1.5rem 0;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .img-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(20%);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(to right, #2563eb, #9333ea);
+            z-index: 100;
+            width: 0%;
+        }
+
+        .nav-link.active {
+            color: #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        #noise-canvas {
+            background: #000;
+            border-radius: 0.5rem;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 900;
+            font-style: italic;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="text-gray-200 min-h-screen">
+
+    <div id="progress-bar"></div>
+
+    <nav class="sticky top-0 z-50 bg-black/90 backdrop-blur-xl border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <!-- Logo con Link al Home -->
+            <a href="index.html" class="flex items-center gap-2 hover:opacity-80 transition group">
+                <i class="fa-solid fa-cube text-blue-500 text-xl group-hover:rotate-12 transition-transform"></i>
+                <span class="font-black text-lg uppercase tracking-tighter italic text-white">CG2 <span class="text-blue-500 text-sm">DOCS</span></span>
+            </a>
+
+            <!-- Navegación -->
+            <div class="hidden md:flex gap-6 text-[10px] font-black uppercase tracking-widest text-gray-500 items-center">
+                <!-- Link de Volver -->
+                <a href="index.html" class="flex items-center gap-1.5 hover:text-blue-500 transition py-1 text-gray-400">
+                    <i class="fa-solid fa-house text-[9px]"></i> Inicio
+                </a>
+                <div class="h-4 w-[1px] bg-white/10 mx-1"></div>
+                
+                <a href="#teoria" class="nav-link hover:text-white transition py-1">Teoría</a>
+                <a href="#raytracing" class="nav-link hover:text-white transition py-1">Raytracing</a>
+                <a href="#pathtracing" class="nav-link hover:text-white transition py-1">Path Tracing</a>
+                
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-32">
+
+        <!-- HEADER -->
+        <header class="text-center py-20 reveal active">
+            <h1 class="text-5xl md:text-7xl font-black mb-6 uppercase tracking-tighter leading-none italic">
+                Raytracing, Path Tracing <br><span class="text-blue-600">y Light Baking</span>
+            </h1>
+            <div class="h-1 w-20 bg-blue-600 mx-auto"></div>
+        </header>
+
+        <!-- SECCIÓN 1: TEORÍA COMPLETA -->
+        <section id="teoria" class="scroll-mt-24 reveal">
+            <h2 class="text-3xl font-black mb-10 italic uppercase tracking-tight border-l-4 border-blue-600 pl-4">La Ecuación del Render</h2>
+            <div class="card-glass p-8 rounded-2xl space-y-6">
+                <p class="text-lg leading-relaxed">
+                    Es la "Fórmula Maestra" de los gráficos por computadora (introducida por James Kajiya en 1986). Describe matemáticamente cómo la luz rebota en el mundo.
+                </p>
+                <div class="bg-blue-600/5 p-6 rounded-xl border border-blue-600/20 italic text-xl">
+                    "La luz no se crea ni se destruye, solo se transforma”<br><br>
+                    "La luz que sale de un punto hacia la cámara es igual a la luz que el objeto emite más la luz que refleja."
+                </div>
+
+                <h3 class="text-xl font-black pt-8 text-blue-500 uppercase tracking-widest">Los 4 pilares teóricos fundamentales</h3>
+                
+                <div class="space-y-12 mt-8">
+                    <!-- Pilar 1 -->
+                    <div>
+                        <h4 class="font-bold text-white text-lg">1. Transporte de Luz: Directa vs. Indirecta</h4>
+                        <p class="text-gray-400 mt-2">Esta es la distinción más importante en gráficos por computadora.</p>
+                        <ul class="list-disc list-inside mt-4 space-y-2 text-gray-400">
+                            <li><strong>Luz Directa (Lo fácil):</strong> Es la luz que viaja de la bombilla al objeto y de ahí a tu ojo. Es un solo rebote. Las computadoras llevan 30 años haciendo esto bien.</li>
+                            <li><strong>Luz Indirecta / GI (Lo difícil):</strong> Es la luz que rebota en el suelo, luego en la pared, luego en el techo y finalmente llega a tu ojo.</li>
+                        </ul>
+                        <p class="mt-4 bg-white/5 p-4 rounded text-sm italic">
+                            <strong>La Implicación Teórica:</strong> La luz no muere cuando toca un objeto; se transforma. Si una luz blanca golpea una pared roja, los fotones que rebotan ahora son "rojos". Esto es lo que llamamos <strong>Color Bleeding</strong> (Sangrado de color).
+                        </p>
+                        <div class="img-container">
+                            <img src="images/image3.jpg" alt="Imagen de Reflexión y Difracción" style="width: 50%;">
+                            <p class="text-[10px] p-2 text-center text-gray-600 uppercase">Teoría de Reflexión y Difracción</p>
+                        </div>
+                    </div>
+
+                    <!-- Pilar 2 -->
+                    <div>
+                        <h4 class="font-bold text-white text-lg">2. Conservación de la Energía (La Regla de Oro del PBR)</h4>
+                        <p class="text-gray-400 mt-2">Para que el render sea realista, no puede "crear luz" de la nada (a menos que sea un objeto emisivo).</p>
+                        <p class="mt-2 text-gray-300"><strong>La Teoría:</strong> Cuando un rayo de luz golpea una superficie, la energía se divide en dos:</p>
+                        <ul class="list-disc list-inside mt-2 text-gray-400">
+                            <li><strong>Reflexión:</strong> Rebota hacia fuera (Brillo).</li>
+                            <li><strong>Absorción/Refracción:</strong> Entra en el objeto (Color difuso o calor).</li>
+                        </ul>
+                        <p class="mt-4 font-bold text-blue-400">La Regla: La suma de la luz que rebota + la luz que se absorbe nunca puede ser mayor que la luz que llegó originalmente.</p>
+                        <p class="text-xs text-gray-500 mt-4 leading-relaxed">
+                            <strong>El Error Común:</strong> Antes, en los videojuegos viejos, podías tener un material que brillaba mucho y además tenía un color base muy fuerte. Eso rompía la física. Unreal Engine usa PBR (Physically Based Rendering) para forzar esta conservación de energía automáticamente.
+                        </p>
+                    </div>
+
+                    <!-- Pilar 3 -->
+                    <div>
+                        <h4 class="font-bold text-white text-lg">3. La Micro-Superficie (¿Por qué existe el Roughness?)</h4>
+                        <p class="text-gray-400 mt-2">Si todo son rebotes de rayos... ¿por qué algunos objetos son espejos perfectos y otros son mate (como la tiza)?</p>
+                        <p class="mt-2 text-gray-300"><strong>La Teoría:</strong> En la realidad, <strong>todo es un espejo</strong>. Todo refleja la luz.</p>
+                        <p class="mt-2 text-gray-400 italic">La Diferencia está en las imperfecciones microscópicas.</p>
+                        <ul class="list-disc list-inside mt-2 text-gray-400">
+                            <li><strong>Superficie Lisa (Espejo):</strong> Todos los rayos rebotan en paralelo, conservando la imagen.</li>
+                            <li><strong>Superficie Rugosa (Tiza):</strong> La superficie es como una cordillera de montañas microscópicas. Los rayos llegan paralelos pero rebotan en direcciones caóticas (dispersión).</li>
+                        </ul>
+                        <div class="img-container">
+                            <img src="images/image2.jpg" alt="Imagen de Reflexión y Difracción" style="width: 100%;">
+                            <p class="text-[10px] p-2 text-center text-gray-600 uppercase">Diferencia entre reflexión especular y difusa</p>
+                        </div>
+                    </div>
+
+                    <!-- Pilar 4 -->
+                    <div>
+                        <h4 class="font-bold text-white text-lg">4. El Muestreo (Sampling) y el "Ruido"</h4>
+                        <p class="text-gray-400 mt-2"><strong>El Problema:</strong> Como no podemos calcular los infinitos fotones del universo, lanzamos "sondas" o muestras aleatorias (Rayos) para adivinar qué hay ahí fuera.</p>
+                        
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5 mt-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h5 class="text-xs font-black uppercase text-blue-500">Analogía de la Encuesta (Simulador)</h5>
+                                <button onclick="simulateNoise()" class="px-4 py-1 bg-blue-600 text-white text-[10px] font-black rounded hover:bg-blue-500 transition">Muestrear (Sampling)</button>
+                            </div>
+                            <canvas id="noise-canvas" class="w-full h-32 mb-4"></canvas>
+                            <p class="text-sm text-gray-400 italic">
+                                Si le preguntas a 1 persona (1 Sample), tu predicción será terrible (Mucho Ruido/Error). Si le preguntas a 1,000 personas (1,000 Samples), tu predicción será muy precisa (Imagen Nítida).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESUMEN CLASE -->
+                <div class="mt-16 p-8 bg-blue-600/10 rounded-2xl border border-blue-600/30">
+                    <h3 class="font-black text-xl italic mb-6">Resumen para la Clase</h3>
+                    <ul class="space-y-4">
+                        <li class="flex gap-4"><i class="fa-solid fa-check text-blue-500"></i> La luz rebota y cambia de color (Luz Indirecta).</li>
+                        <li class="flex gap-4"><i class="fa-solid fa-check text-blue-500"></i> La luz nunca se crea de la nada, solo se reparte (Conservación de Energía).</li>
+                        <li class="flex gap-4"><i class="fa-solid fa-check text-blue-500"></i> La rugosidad es solo un montón de micro-espejos desordenados (Micro-facetas).</li>
+                        <li class="flex gap-4"><i class="fa-solid fa-check text-blue-500"></i> Como no podemos simular todos los fotones, hacemos una encuesta estadística lanzando rayos aleatorios (Sampling).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: RAYTRACING COMPLETO -->
+        <section id="raytracing" class="scroll-mt-24 reveal">
+            <h2 class="text-3xl font-black mb-10 italic uppercase tracking-tight border-l-4 border-blue-600 pl-4">Raytracing</h2>
+            <div class="card-glass p-8 rounded-2xl">
+                <div class="img-container">
+                    <img src="/images/image1.jpg" alt="Funcionamiento del raytracing" style="padding:40px; filter: invert(1);">
+                    <p class="text-[10px] p-2 text-center text-gray-600 uppercase">Concepto: La Visión al Revés</p>
+                </div>
+                
+                <p class="text-gray-300 leading-relaxed mb-8">
+                    En el mundo real, la luz sale de la bombilla, rebota en la mesa y entra en tu ojo. Pero simular eso es imposible para una computadora porque hay billones de rayos de luz que nunca miramos.
+                    La Solución: El Ray Tracing hace lo contrario. Disparamos rayos <strong>desde la cámara (los ojos del jugador)</strong> hacia el mundo. Así solo calculamos lo que realmente vemos.
+                </p>
+
+                <div class="space-y-8">
+                    <div class="p-6 bg-white/5 rounded-xl">
+                        <h4 class="font-bold text-blue-400">Paso 1: El Rayo Primario (La Búsqueda)</h4>
+                        <p class="text-sm text-gray-400 mt-2">El motor lanza un "Rayo" invisible desde la cámara a través de cada píxel de la rejilla de la pantalla. El rayo viaja hasta que golpea el primer objeto que encuentra.</p>
+                    </div>
+                    <div class="p-6 bg-white/5 rounded-xl">
+                        <h4 class="font-bold text-blue-400">Paso 2: El Rayo de Sombra (¿Estoy iluminado?)</h4>
+                        <p class="text-sm text-gray-400 mt-2">¿Este punto está en la sombra o le da el sol? Se dispara un segundo rayo hacia la luz. Si choca con otro objeto ➔ Sombra. Por esto las sombras en RT son perfectas; es física real.</p>
+                    </div>
+                    <div class="p-6 bg-white/5 rounded-xl">
+                        <h4 class="font-bold text-blue-400">Paso 3: El Rebote (Reflexiones y GI)</h4>
+                        <p class="text-sm text-gray-400 mt-2">Si el objeto es un espejo o metal, el rayo original rebota (como una bola de billar). Esto permite que los objetos se reflejen unos a otros en tiempo real, incluso fuera de la pantalla.</p>
+                    </div>
+                </div>
+
+                <div class="mt-12 text-center text-sm font-black uppercase text-gray-600">
+                    <p>Rasterización = Pintar un cuadro plano (falso)</p>
+                    <p>Ray Tracing = Simular física de fotones (real)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: PATH TRACING COMPLETO -->
+        <section id="pathtracing" class="scroll-mt-24 reveal">
+            <h2 class="text-3xl font-black mb-10 italic uppercase tracking-tight border-l-4 border-blue-600 pl-4">Path Tracing</h2>
+            <div class="card-glass p-8 rounded-2xl">
+                <p class="text-2xl italic font-black text-blue-500 mb-6">"El simulador de caos de la luz"</p>
+                <p class="text-gray-400 leading-relaxed italic">Determinismo vs. Azar</p>
+                <p class="text-gray-300 mt-4 leading-relaxed">
+                    <strong>Ray Tracing Clásico (El Francotirador):</strong> Dispara un rayo, rebota en el ángulo perfecto. Limpio y predecible.<br>
+                    <strong>Path Tracing (La Escopeta):</strong> Elige una dirección <strong>aleatoria</strong> y sigue el camino. Por eso lo llamamos el algoritmo del <strong>"Caminante Borracho"</strong>.
+                </p>
+
+                <div class="bg-black/60 p-8 rounded-2xl mt-8">
+                    <h4 class="font-bold text-blue-400 uppercase text-xs mb-4">El Superpoder: Global Illumination (GI) Real</h4>
+                    <p class="text-gray-400 italic">"Los objetos dejan de verse pegados sobre el fondo y empiezan a interactuar entre ellos."</p>
+                    <p class="text-gray-300 mt-4">
+                        <strong>Color Bleeding:</strong> La luz golpea la pared roja, rebota llevando el color y tiñe la esfera blanca. En Path Tracing, la sombra de una esfera se tiñe de rosa suavemente si está cerca de una pared roja.
+                    </p>
+                </div>
+
+                <div class="mt-12">
+                    <h4 class="font-bold text-white mb-4">El Costo: El "Ruido" (Noise)</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">Como estamos lanzando rayos al azar, al principio la imagen parece una televisión sin señal.</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="p-4 bg-black rounded text-[10px] text-center">1 Sample: Pura suerte</div>
+                        <div class="p-4 bg-black rounded text-[10px] text-center">100 Samples: Se ve arena</div>
+                        <div class="p-4 bg-blue-600 rounded text-[10px] text-center font-bold">10,000 Samples: Nítida</div>
+                    </div>
+                </div>
+
+                <div class="img-container mt-12">
+                    <img src="images/image5.jpg" alt="Imagen de Reflexión y Difracción" style="width: 100%;">
+                    <img src="images/image6.jpg" alt="Imagen de Reflexión y Difracción" style="width: 100%;">
+                    <img src="images/image4.jpg" alt="Imagen de Reflexión y Difracción" style="width: 100%;">
+                    <p class="text-[10px] p-2 text-center text-gray-600 uppercase">Ejemplo: Cyberpunk 2077 Path Tracing</p>
+                </div>
+            </div>
+        </section>
+      
+
+    </main>
+
+    <footer class="bg-black py-24 border-t border-white/5 text-center">
+        <p class="text-gray-600 text-[10px] font-black uppercase tracking-[0.5em]">Guía Maestra • Computación Gráfica 2 • Unreal Engine</p>
+    </footer>
+
+    <script>
+        // Barra de progreso
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+            
+            // Highlight nav
+            document.querySelectorAll('section').forEach(section => {
+                const top = section.offsetTop - 100;
+                if (winScroll >= top) {
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    const activeLink = document.querySelector(`.nav-link[href="#${section.id}"]`);
+                    if(activeLink) activeLink.classList.add('active');
+                }
+            });
+        };
+
+        // Revelación
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Noise Simulator
+        const canvas = document.getElementById('noise-canvas');
+        const ctx = canvas.getContext('2d');
+        function initCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        }
+        function simulateNoise() {
+            for(let i=0; i<800; i++) {
+                const x = Math.random()*canvas.width; const y = Math.random()*canvas.height;
+                const b = Math.random()*255; ctx.fillStyle = `rgb(${b},${b},${b})`;
+                ctx.fillRect(x,y,1,1);
+            }
+        }
+        window.addEventListener('resize', initCanvas); initCanvas();
+        for(let i=0; i<1000; i++) simulateNoise();
+    </script>
+</body>
+</html>

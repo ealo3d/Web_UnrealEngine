@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unreal Engine: Master en Computación Gráfica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #e5e7eb; scroll-behavior: smooth; }
+        .bg-grid {
+            background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .topic-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .topic-card:hover {
+            border-color: #2563eb;
+            background: rgba(37, 99, 235, 0.05);
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-grid">
+
+    <!-- HERO -->
+    <header class="max-w-5xl mx-auto px-6 pt-32 pb-20 border-b border-white/5">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="h-[1px] w-12 bg-blue-600"></div>
+            <span class="text-xs font-black uppercase tracking-[0.3em] text-blue-500">Masterclass Series</span>
+        </div>
+        <h1 class="text-6xl md:text-8xl font-black uppercase tracking-tighter italic leading-[0.9] mb-8">
+            Unreal Engine <br><span class="text-blue-600 text-5xl md:text-7xl">Ecosistema de Render</span>
+        </h1>
+        <p class="text-gray-400 max-w-2xl text-lg leading-relaxed">
+            Explora los fundamentos técnicos de la computación gráfica moderna aplicados al motor de juego más potente de la industria.
+        </p>
+    </header>
+
+    <!-- TEMARIO -->
+    <main class="max-w-5xl mx-auto px-6 py-24">
+        <h2 class="text-sm font-black uppercase tracking-[0.4em] text-gray-600 mb-12">Módulos del Curso</h2>
+        
+        <div class="space-y-4">
+            <!-- TEMA 1: RAYTRACING -->
+            <a href="raytracing.html" class="topic-card group flex flex-col md:flex-row md:items-center justify-between p-8 rounded-2xl">
+                <div class="flex items-center gap-6">
+                    <span class="text-4xl font-black italic text-white/10 group-hover:text-blue-600/30 transition">01</span>
+                    <div>
+                        <h3 class="text-xl font-black uppercase italic group-hover:text-blue-500 transition">Iluminación: Raytracing & Path Tracing</h3>
+                        <p class="text-gray-500 text-sm mt-1">Teoría de la luz, rebotes indirectos y simulación física en tiempo real.</p>
+                    </div>
+                </div>
+                <div class="mt-6 md:mt-0 flex items-center gap-4">
+                    <span class="text-[10px] font-black uppercase bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full border border-blue-600/30">Completado</span>
+                    <i class="fa-solid fa-arrow-right text-gray-700 group-hover:text-blue-500 group-hover:translate-x-2 transition"></i>
+                </div>
+            </a>
+
+            <!-- TEMA 2: PRÓXIMAMENTE -->
+            <div class="topic-card opacity-40 flex flex-col md:flex-row md:items-center justify-between p-8 rounded-2xl cursor-not-allowed">
+                <div class="flex items-center gap-6">
+                    <span class="text-4xl font-black italic text-white/5">02</span>
+                    <div>
+                        <h3 class="text-xl font-black uppercase italic">Sistemas de Materiales & PBR</h3>
+                        <p class="text-gray-500 text-sm mt-1">Creación de shaders complejos y optimización de texturas.</p>
+                    </div>
+                </div>
+                <div class="mt-6 md:mt-0">
+                    <span class="text-[10px] font-black uppercase bg-white/5 text-gray-500 px-3 py-1 rounded-full">Próximamente</span>
+                </div>
+            </div>
+
+            <!-- TEMA 3: PRÓXIMAMENTE -->
+            <div class="topic-card opacity-40 flex flex-col md:flex-row md:items-center justify-between p-8 rounded-2xl cursor-not-allowed">
+                <div class="flex items-center gap-6">
+                    <span class="text-4xl font-black italic text-white/5">03</span>
+                    <div>
+                        <h3 class="text-xl font-black uppercase italic">VFX: Niagara & Fluidos</h3>
+                        <p class="text-gray-500 text-sm mt-1">Simulación de partículas y efectos volumétricos avanzados.</p>
+                    </div>
+                </div>
+                <div class="mt-6 md:mt-0">
+                    <span class="text-[10px] font-black uppercase bg-white/5 text-gray-500 px-3 py-1 rounded-full">Próximamente</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="max-w-5xl mx-auto px-6 py-20 border-t border-white/5 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-8">
+        <p class="text-[10px] font-black uppercase tracking-[0.5em] text-gray-600">Unreal Engine Docs • Luis Carlos Ealo</p>
+        <div class="flex gap-6">
+            <a href="#" class="text-gray-500 hover:text-white transition"><i class="fa-brands fa-github text-xl"></i></a>
+            <a href="#" class="text-gray-500 hover:text-white transition"><i class="fa-brands fa-linkedin text-xl"></i></a>
+        </div>
+    </footer>
+
+</body>
+</html>
